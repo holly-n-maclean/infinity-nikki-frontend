@@ -17,7 +17,7 @@ function LoginPage() {
     e.preventDefault();
 
     try {
-      const res = await Axios.post('http://localhost:5000/api/auth/login', {
+      const res = await Axios.post(`${process.env.REACT_APP_API_BASE_URL}/auth/login`, {
         username,
         password,
       });

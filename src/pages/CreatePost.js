@@ -12,7 +12,6 @@ function CreatePost() {
   const [tags, setTags] = useState([]);
   const [selectedTab, setSelectedTab] = useState('write');
   const [success, setSuccess] = useState(false);
-  const [imageFiles, setImageFiles] = useState([]);
   const [tagInput, setTagInput] = useState([]);
 
   const handleImagesChange = async (e) => {
@@ -27,11 +26,11 @@ function CreatePost() {
       
   
       try {
-        const res = await Axios.post('http://localhost:5000/api/posts/upload', formData, {
+        const res = await Axios.post(`${process.env.REACT_APP_API_BASE_URL}/posts/upload`, formData, {
           headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
         });
   
-        const imageUrl = `http://localhost:5000/uploads/${res.data.filename}`;
+        const imageUrl = `${process.env.REACT_APP_API_BASE_URL.replace('/api', '')}/uploads/${res.data.filename}`;
         const markdownImage = `\n\n![Uploaded Image](${imageUrl})\n`;
   
         // ✅ Immediately insert the image markdown into the editor content
@@ -47,38 +46,20 @@ function CreatePost() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSuccess(false);
-
-    let finalContent = content;
-
+  
+    const token = localStorage.getItem('token');
+  
     try {
-      if (imageFiles.length > 0) {
-        for (const file of imageFiles) {
-          const formData = new FormData();
-          formData.append('image', file);
-
-          const token = localStorage.getItem('token');
-
-          const res = await Axios.post('http://localhost:5000/api/posts/upload', formData, {
-            headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
-          });
-
-          const imageUrl = `http://localhost:5000/uploads/${res.data.filename}`;
-          finalContent += `\n\n![Uploaded Image](${imageUrl})\n`;
-        }
-      }
-
-      const token = localStorage.getItem('token');
-
-      await Axios.post('http://localhost:5000/api/posts', {
+      await Axios.post(`${process.env.REACT_APP_API_BASE_URL}/posts`, {
         title,
-        content: finalContent,
+        content,
         tags
       }, {
         headers: {
           Authorization: `Bearer ${token}`
         }
       });
-
+  
       setSuccess(true);
       navigate('/');
     } catch (error) {

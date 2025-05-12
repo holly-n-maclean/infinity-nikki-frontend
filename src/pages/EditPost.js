@@ -17,7 +17,7 @@ function EditPost() {
   const [tagInput, setTagInput] = useState([]);
 
   useEffect(() => {
-    Axios.get(`http://localhost:5000/api/posts/${id}`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/posts/${id}`)
       .then(res => {
         setTitle(res.data.title);
         setContent(res.data.content);
@@ -39,11 +39,11 @@ function EditPost() {
       formData.append('image', file);
 
       try {
-        const res = await Axios.post('http://localhost:5000/api/posts/upload', formData, {
+        const res = await Axios.post(`${process.env.REACT_APP_API_BASE_URL}/posts/upload`, formData, {
           headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${localStorage.getItem('token')}` }
         });
 
-        const imageUrl = `http://localhost:5000/uploads/${res.data.filename}`;
+        const imageUrl = `${process.env.REACT_APP_API_BASE_URL.replace('/api', '')}/uploads/${res.data.filename}`;
         const markdown = `\n\n![Uploaded Image](${imageUrl})\n`;
 
         setContent(prev => prev + markdown);
@@ -59,7 +59,7 @@ function EditPost() {
     e.preventDefault();
 
     try {
-      await Axios.put(`http://localhost:5000/api/posts/${id}`, {
+      await Axios.put(`${process.env.REACT_APP_API_BASE_URL}/posts/${id}`, {
         title,
         content,
         tags

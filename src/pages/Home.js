@@ -10,7 +10,7 @@ function Home() {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    Axios.get(`http://localhost:5000/api/posts?page=${currentPage}&limit=5`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/posts?page=${currentPage}&limit=5`)
       .then(res => {
         setPosts(res.data.posts);
         setTotalPages(res.data.pages);

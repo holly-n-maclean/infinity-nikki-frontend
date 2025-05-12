@@ -11,7 +11,7 @@ function PostPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    Axios.get(`http://localhost:5000/api/posts/${id}`)
+    Axios.get(`${process.env.REACT_APP_API_BASE_URL}/posts/${id}`)
       .then(res => setPost(res.data))
       .catch(err => {
         if (err.response?.status === 404) {
@@ -34,7 +34,7 @@ function PostPage() {
       try {
         const token = localStorage.getItem('token');
 
-        await Axios.delete(`http://localhost:5000/api/posts/${id}`, {
+        await Axios.delete(`${process.env.REACT_APP_API_BASE_URL}/posts/${id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
