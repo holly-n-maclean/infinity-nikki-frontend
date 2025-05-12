@@ -1,41 +1,37 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Axios from 'axios';
 import ReactMarkdown from 'react-markdown';
-import ReactMde from 'react-mde';
-import 'react-mde/lib/styles/css/react-mde-all.css'
-import { useNavigate } from 'react-router-dom';
+import MdEditor from 'react-markdown-editor-lite';
+import 'react-markdown-editor-lite/lib/index.css';
 
 function CreatePost() {
   const navigate = useNavigate();
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState([]);
-  const [selectedTab, setSelectedTab] = useState('write');
-  const [success, setSuccess] = useState(false);
-  const [tagInput, setTagInput] = useState([]);
+  const [tagInput, setTagInput] = useState('');
+  const [imageFiles, setImageFiles] = useState([]);
+
+  const handleEditorChange = ({ text }) => {
+    setContent(text);
+  };
 
   const handleImagesChange = async (e) => {
     const files = Array.from(e.target.files);
-    if (files.length === 0) return;
-
+    if (!files.length) return;
     const token = localStorage.getItem('token');
-  
+
     for (const file of files) {
       const formData = new FormData();
       formData.append('image', file);
-      
-  
       try {
         const res = await Axios.post(`${process.env.REACT_APP_API_BASE_URL}/posts/upload`, formData, {
           headers: { 'Content-Type': 'multipart/form-data', Authorization: `Bearer ${token}` }
         });
-  
+
         const imageUrl = `${process.env.REACT_APP_API_BASE_URL.replace('/api', '')}/uploads/${res.data.filename}`;
-        const markdownImage = `\n\n![Uploaded Image](${imageUrl})\n`;
-  
-        // ✅ Immediately insert the image markdown into the editor content
-        setContent(prev => prev + markdownImage);
-  
+        setContent(prev => prev + `\n\n![Uploaded Image](${imageUrl})\n`);
       } catch (err) {
         console.error('Error uploading image:', err);
         alert(`Failed to upload: ${file.name}`);
@@ -45,10 +41,8 @@ function CreatePost() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setSuccess(false);
-  
     const token = localStorage.getItem('token');
-  
+
     try {
       await Axios.post(`${process.env.REACT_APP_API_BASE_URL}/posts`, {
         title,
@@ -59,63 +53,36 @@ function CreatePost() {
           Authorization: `Bearer ${token}`
         }
       });
-  
-      setSuccess(true);
+
       navigate('/');
-    } catch (error) {
-      console.error('Error creating post:', error);
+    } catch (err) {
+      console.error('Error creating post:', err);
     }
   };
 
   return (
     <div className="container" style={{ maxWidth: '800px', margin: '0 auto', padding: '1rem' }}>
       <h1>Create a New Post</h1>
-
       <form onSubmit={handleSubmit}>
-        {/* Title */}
-        <div style={{ marginBottom: '1rem' }}>
-          <input
-            type="text"
-            placeholder="Post Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            style={{ width: '100%', padding: '0.5rem' }}
-          />
-        </div>
+        {/* Title Input */}
+        <input
+          type="text"
+          placeholder="Post Title"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          required
+          style={{ width: '100%', padding: '0.5rem', marginBottom: '1rem' }}
+        />
 
         {/* Markdown Editor */}
-        <div style={{ marginBottom: '1rem' }}>
-          <ReactMde
-            value={content}
-            onChange={setContent}
-            selectedTab={selectedTab}
-            onTabChange={setSelectedTab}
-            generateMarkdownPreview={markdown =>
-              Promise.resolve(<ReactMarkdown
-                components={{
-                  img: ({ node, ...props }) => (
-                    <img
-                      {...props}
-                      style={{
-                        maxWidth: '100%',
-                        height: 'auto',
-                        borderRadius: '8px',
-                        margin: '1rem 0',
-                        display: 'block',
-                        boxShadow: '0 1px 6px rgba(0,0,0,0.1)',
-                      }}
-                    />
-                  )
-                }}
-              
-              >{markdown}</ReactMarkdown>)
-            }
-          />
-        </div>
+        <MdEditor
+          value={content}
+          style={{ height: '400px', marginBottom: '1rem' }}
+          renderHTML={text => <ReactMarkdown>{text}</ReactMarkdown>}
+          onChange={handleEditorChange}
+        />
 
-        {/* Tags */}
-        <div style={{ marginBottom: '1rem' }}>
+        {/* Tag Input */}
         <input
           type="text"
           value={tagInput}
@@ -136,27 +103,21 @@ function CreatePost() {
             padding: '0.5rem',
             borderRadius: '5px',
             border: '1px solid #ccc',
-            marginBottom: '0.5rem'
+            marginBottom: '1rem'
           }}
         />
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+        {/* Tag List */}
+        <div style={{ marginBottom: '1rem', display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
           {tags.map((tag, i) => (
-            <span
-              key={i}
-              style={{
-                backgroundColor: '#f3f4f6',
-                color: '#374151',
-                padding: '0.4rem 0.75rem',
-                borderRadius: '9999px',
-                fontSize: '0.85rem',
-                fontWeight: 500,
-                border: '1px solid #e5e7eb',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '0.5rem'
-              }}
-            >
+            <span key={i} style={{
+              backgroundColor: '#f3f4f6',
+              padding: '0.4rem 0.75rem',
+              borderRadius: '9999px',
+              fontSize: '0.85rem',
+              display: 'flex',
+              alignItems: 'center'
+            }}>
               {tag}
               <button
                 type="button"
@@ -164,37 +125,33 @@ function CreatePost() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#6b7280',
-                  fontWeight: 'bold',
-                  cursor: 'pointer',
-                  lineHeight: 1
+                  marginLeft: '0.5rem',
+                  cursor: 'pointer'
                 }}
-                aria-label={`Remove ${tag}`}
               >
                 ×
               </button>
             </span>
           ))}
         </div>
-      </div>
 
-        {/* Multiple image file input */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label>Upload one or more images</label><br />
-          <input type="file" multiple accept="image/*" onChange={handleImagesChange} />
-        </div>
+        {/* Image Upload */}
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          onChange={handleImagesChange}
+          style={{ marginBottom: '1rem' }}
+        />
 
-        <button
-          type="submit"
-          style={{
-            padding: '0.7rem 1.5rem',
-            backgroundColor: '#007bff',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            cursor: 'pointer'
-          }}
-        >
+        <button type="submit" style={{
+          padding: '0.7rem 1.5rem',
+          backgroundColor: '#007bff',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer'
+        }}>
           Create Post
         </button>
       </form>
