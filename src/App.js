@@ -36,6 +36,7 @@ function App() {
           <Link to="/tags/fresh" className="dropdown-item">#fresh</Link>
           <Link to="/tags/sexy" className="dropdown-item">#sexy</Link>
           <Link to="/tags/cool" className="dropdown-item">#cool</Link>
+          <Link to="/tags/news" className="dropdown-item">#news</Link>
         </div>
       </div>
 

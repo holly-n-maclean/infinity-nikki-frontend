@@ -273,6 +273,10 @@ nav a.button:hover {
   background-color: #d0f4fa; /* pale yellow */
   color: #4881a7;
 }
+.dropdown-item:nth-child(6):hover {
+  background-color: #d99362; /* light pink */
+  color: #80583c;
+}
 
 @media (max-width: 600px) {
   .post-card {
