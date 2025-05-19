@@ -75,7 +75,7 @@ function PostPage() {
                 style={{
                   maxWidth: '100%',
                   borderRadius: '12px',
-                  margin: '1.5rem 0',
+                  margin: '1.5rem auto',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
                   display: 'block'
                 }}

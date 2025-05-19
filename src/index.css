@@ -31,11 +31,7 @@ h1, h2, .fancy-header {
   max-width: 100%;
   height: auto;
   border-radius: 8px;
-<<<<<<< HEAD
   margin: 1rem auto; /* centers horizontally */
-=======
-  margin: 1rem 0;
->>>>>>> origin/main
   display: block;
 }
 
@@ -279,13 +275,8 @@ nav a.button:hover {
   color: #4881a7;
 }
 .dropdown-item:nth-child(6):hover {
-<<<<<<< HEAD
   background-color: #fccfb5; /* light pink */
   color: #96735f;
-=======
-  background-color: #ecb8f7; /* light pink */
-  color: #996ea1;
->>>>>>> origin/main
 }
 
 @media (max-width: 600px) {
