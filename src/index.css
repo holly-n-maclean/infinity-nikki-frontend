@@ -274,8 +274,8 @@ nav a.button:hover {
   color: #4881a7;
 }
 .dropdown-item:nth-child(6):hover {
-  background-color: #d99362; /* light pink */
-  color: #80583c;
+  background-color: #85e4cf; /* light pink */
+  color: #569e8f;
 }
 
 @media (max-width: 600px) {
