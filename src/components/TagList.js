@@ -7,7 +7,7 @@ const TAG_COLOURS = {
   fresh: '#bceab6',
   cool: '#b9dcf7',
   elegant: '#fae483',
-  news: '#d99362',
+  news: '#ecb8f7',
 };
 
 function getTagColour(tag) {
